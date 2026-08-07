@@ -194,17 +194,17 @@ ON T_WARNING (AUTH_USER_ID, DETECT_DATE DESC);
 INSERT OR IGNORE INTO M_PRODUCT
     (PRODUCT_ID, PRODUCT_CODE, PRODUCT_NAME, STATUS, SORT_NO, DEL_FLG, CREATE_DATE, UPDATE_DATE)
 VALUES
-    (1, 'SUN_AND_MOON', 'SUN AND MOON PLANNER', 1, 10, 0, datetime('now'), datetime('now')),
-    (2, 'HANABI', 'HANABI PLANNER', 1, 20, 0, datetime('now'), datetime('now')),
-    (3, 'HANABI_GOOGLE_EARTH', 'HANABI PLANNER Google Earth追加機能', 1, 30, 0, datetime('now'), datetime('now'));
+    (1, 'SUN_AND_MOON', 'SUN AND MOON PLANNER', 1, 10, 0, strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    (2, 'HANABI', 'HANABI PLANNER', 1, 20, 0, strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    (3, 'HANABI_GOOGLE_EARTH', 'HANABI PLANNER Google Earth追加機能', 1, 30, 0, strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00');
 
 INSERT OR IGNORE INTO M_SYSTEM_SETTING
     (SETTING_KEY, SETTING_VALUE, DESCRIPTION, UPDATE_DATE)
 VALUES
-    ('WARNING_SCORE', '100', '管理者メール通知を行うWarningスコア', datetime('now')),
-    ('LOGIN_FAIL_LIMIT', '5', '一定期間内のログイン失敗回数の初期閾値', datetime('now')),
-    ('ACCESS_LOG_KEEP_DAYS', '180', 'アクセスログ保持日数の目安', datetime('now')),
-    ('WARNING_MAIL_INTERVAL_MIN', '60', '同一対象へのWarning通知抑止時間（分）', datetime('now')),
-    ('DEVICE_CHANGE_SCORE', '10', '端末変化時の初期スコア', datetime('now')),
-    ('REGION_CHANGE_SCORE', '20', '地域変化時の初期スコア', datetime('now')),
-    ('COUNTRY_CHANGE_SCORE', '50', '国変化時の初期スコア', datetime('now'));
+    ('WARNING_SCORE', '100', '管理者メール通知を行うWarningスコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    ('LOGIN_FAIL_LIMIT', '5', '一定期間内のログイン失敗回数の初期閾値', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    ('ACCESS_LOG_KEEP_DAYS', '180', 'アクセスログ保持日数の目安', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    ('WARNING_MAIL_INTERVAL_MIN', '60', '同一対象へのWarning通知抑止時間（分）', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    ('DEVICE_CHANGE_SCORE', '10', '端末変化時の初期スコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    ('REGION_CHANGE_SCORE', '20', '地域変化時の初期スコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    ('COUNTRY_CHANGE_SCORE', '50', '国変化時の初期スコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00');
