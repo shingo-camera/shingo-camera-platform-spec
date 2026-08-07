@@ -1,250 +1,70 @@
-# Authentication Design
+# shingo-camera Platform Specification
 
-Status: Approved
+Status: Active
 
-## 1. 目的
+このリポジトリは、shingo-camera Platformの設計書・実装指示書を管理する正本です。
 
-共通アカウントでSUN AND MOON、HANABI、将来のアプリへログインできるようにする。
+## 正本の場所
 
-認証と商品権限を分離し、商品未購入ユーザーでもアカウント作成とログインを可能にする。
-
-## 2. 認証基盤
-
-Supabase Authを使用する。
-
-初期ログイン方式:
-
-- メールアドレス
-- パスワード
-
-将来追加可能:
-
-- Googleログイン
-
-Googleログインは初期リリース必須ではない。
-
-## 3. ID
-
-### 3.1 利用者が使うログインID
+実装WORKはすべて `implementation/` 配下を正本とします。
 
 ```text
-メールアドレス
+implementation/
+├─ IMPLEMENTATION_PLAN.md
+├─ WORK-001_PLATFORM_FOUNDATION.md
+├─ WORK-002_D1_SETUP.md
+├─ WORK-003_SUPABASE_AUTH.md
+├─ WORK-004_COMMON_API.md
+├─ WORK-005_ACCOUNT_ENTITLEMENT.md
+├─ WORK-006_ADMIN.md
+├─ WORK-007_STRIPE.md
+├─ WORK-008_NOTE_MIGRATION.md
+├─ WORK-009_WARNING.md
+├─ WORK-010_SUN_AND_MOON_INTEGRATION.md
+├─ WORK-011_PUBLIC_SITE.md
+├─ WORK-012_PUBLICATION.md
+└─ CHECKLIST.md
 ```
 
-### 3.2 内部連携ID
+ルート直下にはWORKファイルを置きません。重複管理を避けるため、Claudeへの指示でも必ず `implementation/...` のパスを指定してください。
+
+## フォルダ構成
 
 ```text
-AUTH_USER_ID
+architecture/   基盤・認証・セキュリティ設計
+api/            API仕様
+adr/            Architecture Decision Record
+database/       DB設計・DDL・ERD・テーブル定義
+implementation/ 実装順序・WORK指示・チェックリスト
+operation/      運用・移行・決済・Warning・バックアップ
+prompt/         Claude実装ルール・レビュー基準
+screen/         公開画面・管理画面設計
 ```
 
-AUTH_USER_IDはSupabaseが発行するUUIDを使用する。
+## 実装時の読み方
 
-自前の連番USER_IDは持たない。
+各WORK開始時は、最低限以下を確認します。
 
-### 3.3 画面表示
+1. `prompt/CLAUDE.md`
+2. `prompt/REVIEW_RULE.md`
+3. `implementation/IMPLEMENTATION_PLAN.md`
+4. 対象の `implementation/WORK-xxx_*.md`
+5. WORK内で指定された関連設計書
 
-AUTH_USER_IDは通常画面へ表示しない。
+過去チャットとGit上の設計書に差異がある場合は、Gitの最新版を優先します。
 
-管理画面でもメールアドレスを主な検索・表示項目とする。
+## 現在の進捗
 
-## 4. M_USERとの関係
+- WORK-001 Platform Foundation: 完了
+- WORK-002 D1 Initial Setup: 完了
+- WORK-003 Supabase Authentication: 完了
+- WORK-004 Common API Foundation: 次工程
 
-Supabase Authを認証情報の正本とする。
-
-D1のM_USERには業務運用に必要な情報だけを持つ。
+## 環境
 
 ```text
-AUTH_USER_ID
-LOGIN_MAIL
-STATUS
-MAIL_AUTH_DATE
-PASSWORD_CHANGE_DATE
-LAST_LOGIN_DATE
-DEL_FLG
-CREATE_DATE
-UPDATE_DATE
+Local
+Production（公開前は未告知で運用）
 ```
 
-パスワード本体・パスワードハッシュはD1に保存しない。
-
-## 5. ユーザー状態
-
-```text
-0: 仮登録
-1: 有効
-2: 一時停止
-9: 退会
-```
-
-初期リリースでは、利用者自身による退会画面は必須としない。
-
-管理者による停止・再開は実装する。
-
-## 6. 新規登録フロー
-
-```text
-メールアドレス入力
-↓
-パスワード入力
-↓
-Supabase Authへ登録
-↓
-AUTH_USER_ID発行
-↓
-認証メール送信
-↓
-メール認証完了
-↓
-ログイン
-↓
-M_USER確認
-↓
-存在しなければM_USER作成
-↓
-ログイン後ホーム
-```
-
-登録直後は商品権限0件でもよい。
-
-## 7. ログインフロー
-
-```text
-メールアドレス・パスワード入力
-↓
-Supabase Authで認証
-↓
-認証トークン取得
-↓
-Cloudflare APIへ送信
-↓
-トークン検証
-↓
-M_USER状態確認
-↓
-商品権限取得
-↓
-ログイン後ホーム表示
-```
-
-M_USER.STATUSが一時停止または退会の場合は、アプリ利用を許可しない。
-
-## 8. 商品未購入ユーザー
-
-以下の状態を許可する。
-
-```text
-Supabase Auth: あり
-M_USER: あり
-T_USER_PRODUCT: 0件
-```
-
-ログインは可能。
-
-ログイン後ホームでは購入可能な商品を表示する。
-
-## 9. 商品権限確認
-
-アプリ起動時にCloudflare APIでT_USER_PRODUCTを確認する。
-
-権限判定条件:
-
-- AUTH_USER_ID一致
-- PRODUCT_ID一致
-- STATUSが有効
-- DEL_FLGが未削除
-- 現在日時がSTART_DATE以上
-- 現在日時がEND_DATE以下
-
-権限なしの場合は商品案内へ遷移する。
-
-## 10. パスワード変更
-
-画面はshingo-camera側に作成する。
-
-実際の変更処理はSupabase Authへ依頼する。
-
-成功後にM_USER.PASSWORD_CHANGE_DATEを更新する。
-
-## 11. パスワード再設定
-
-```text
-メールアドレス入力
-↓
-Supabase Authへ再設定メール送信依頼
-↓
-ユーザーがメール内リンクを開く
-↓
-shingo-camera側の再設定画面
-↓
-新しいパスワード登録
-```
-
-ユーザーの存在有無を第三者へ推測されにくくするため、送信画面では結果文言を統一する。
-
-例:
-
-```text
-入力されたメールアドレスが登録済みの場合、再設定メールを送信しました。
-```
-
-## 12. メールアドレス変更
-
-初期リリースで必須としない。
-
-将来実装する場合:
-
-1. Supabase Auth側を更新
-2. メール認証完了
-3. M_USER.LOGIN_MAILを同期
-
-AUTH_USER_IDは変更しないため、商品権限・購入履歴は維持される。
-
-## 13. ログアウト
-
-Supabase Authのセッションを終了し、ログイン画面へ遷移する。
-
-T_LOGIN_LOGへログアウトを記録する。
-
-## 14. セッション
-
-セッション管理はSupabase Authへ任せる。
-
-自前のT_SESSIONは初期実装しない。
-
-アプリ側は認証トークンを利用し、Cloudflare APIが毎回検証する。
-
-## 15. DEVICE_ID
-
-初回利用時にブラウザでランダムUUIDを発行する。
-
-用途:
-
-- ログイン履歴
-- アクセス履歴
-- 多地点・複数端末利用の確認
-- 将来のオフライン許可
-
-DEVICE_IDは認証要素ではない。
-
-ブラウザデータ削除・ブラウザ変更等で変わるため、単独で停止判断しない。
-
-## 16. 将来のオフライン対応
-
-初期リリースでは実装しない。
-
-将来、SUN AND MOONの保存済み撮影計画だけをスマホでオフライン利用可能にする。
-
-オンライン時に商品権限を確認し、端末単位の期限付きオフライン許可を発行できる構造にする。
-
-## 17. 管理者操作
-
-管理画面から以下を実施できる。
-
-- ユーザー停止
-- ユーザー再開
-- パスワード再設定メール送信
-- 商品権限付与
-- 商品権限停止
-- 商品権限再開
-
-管理者操作は自動停止より優先する。
+専用Stagingは初期構築では作成しません。
