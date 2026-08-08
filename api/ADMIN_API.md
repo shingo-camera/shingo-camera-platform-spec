@@ -351,15 +351,42 @@ limit
 offset
 ```
 
+limit / offset は「Query parameter の検証方針（管理系 API 共通）」に従う（limit: 1〜200、default 100、範囲外・非整数は 400 / offset: 0 以上、default 0、負数・非整数は 400）。SQL には必ず LIMIT を付与し、無制限取得は行わない。
+
+### 並び順
+
+offset ページングで件数の重複・漏れが起きないよう、全順序が確定する決定的な並びとする。
+
+```text
+ORDER BY PURCHASE_DATE DESC, NOTE_PURCHASE_ID DESC
+```
+
+PURCHASE_DATE が同値の行が存在するため、一意な NOTE_PURCHASE_ID DESC をタイブレーカとして付与する。
+
+### Response
+
+Response 項目は既存の限定集合のまま。total / hasNext などのページング補助項目は追加しない。件数が limit 未満なら最終ページと判断する（画面側で判定）。
+
 ## 12. PUT /api/admin/note/purchases/{id}
 
-用途:
+用途（Request body の `action` で分岐）:
 
-- 手動紐付け
-- 紐付け解除
-- 要確認化
-- 無効化
+- link: 手動紐付け（`authUserId` 必須）
+- unlink: 紐付け解除（影響提示のため2段階。詳細は下記）
+- flag: 要確認化（MATCH_STATUS=2）
+- invalidate: 無効化（MATCH_STATUS=9）
+- reset: 未移行化（MATCH_STATUS=0）
 
-誤紐付け解除時は、T_PURCHASEとT_USER_PRODUCTへの影響を画面に表示し、確認後に実行する。
+### 手動link（利用者制限の対象外）
+
+管理者による手動linkは、利用者applyの事前条件（同一商品のT_USER_PRODUCT.DEL_FLG=0保持時は移行不可）の対象外とする。管理者補正用途のため、既存有効権限がある場合でも既存T_USER_PRODUCTを上書きせず、note購入履歴（T_PURCHASE）とT_NOTE_PURCHASE紐付けのみ行う。T_PURCHASE復活ルール・T_USER_PRODUCTの物理行判定・batch順序は applyNoteMigration と同一（NOTE_MIGRATION_API.md 参照）。
+
+### unlink（誤紐付け解除）
+
+誤紐付け解除時は、T_PURCHASEとT_USER_PRODUCTへの影響を画面に表示し、確認後（`confirm=true`）に実行する。
+
+- T_PURCHASEは物理DELETEせず論理削除（DEL_FLG=1）。PURCHASE_IDは保持し、再applyで復活可能とする。
+- T_USER_PRODUCTを変更してよいのは `GRANT_TYPE=1 AND PURCHASE_ID=対象note購入のPURCHASE_ID` を満たすnote由来行のみ。これを無効化（DEL_FLG=1・STATUS=2・PURCHASE_ID=NULL）する。DEL_FLG=0の別経路（Stripe・テスター・管理者付与）の権限は不変とする。
+- T_NOTE_PURCHASEを未移行へ戻す（MATCH_STATUS=0・MATCH_AUTH_USER_ID=NULL・MATCH_DATE=NULL・PURCHASE_ID=NULL）。
 
 初期は複雑な自動巻戻しを作らず、対象データを明示した管理APIを用意する。
