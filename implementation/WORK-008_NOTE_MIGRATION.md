@@ -1,6 +1,6 @@
 # WORK-008 note Migration
 
-Status: Approved
+Status: Completed
 
 ## 目的
 既存HANABI購入者を共通アカウントへ移行する。
@@ -31,5 +31,19 @@ Status: Approved
 ## 完了条件
 HANABI・Google Earth移行、同一商品重複移行の拒否、商品違い拒否、移行済み拒否、ゲスト購入、テスター例外、unlink→reapply復活、管理者link非上書き、CSV冪等性を確認する。
 
+## Production E2E 実績
+
+Production deploy 済み（Worker: shingo-camera-platform、Version ID: ca47b347-975b-4be8-9a4c-426f9e6780a8）。/api/health は result=OK / environment=production。
+
+- CSV初期取込: 6月CSV（読込151・取込141・対象外10・重複0・エラー0）、7月CSV（読込32・取込32）を投入し、T_NOTE_PURCHASE 合計173件。8月分は月途中で日々増加するため初期確定取込には含めず、今後は最新CSVを追加投入し既存分は冪等性で重複スキップ、新規分のみ追加する運用とする。
+- CSV冪等性: 6月・7月CSVの再投入で取込0・重複スキップ（141・32）を確認。NOTE_TRANSACTION_ID単位の冪等取込をProductionで確認済み。
+- 管理note一覧ページング: 173件を1ページ目100件（NOTE_PURCHASE_ID 173降順）＋2ページ目73件で全件到達。ORDER BY PURCHASE_DATE DESC, NOTE_PURCHASE_ID DESC の決定的順序を実画面確認済み。
+- 正常apply: HANABI（PRODUCT_ID=2）を移行し、T_PURCHASE / T_NOTE_PURCHASE / T_USER_PRODUCT の3テーブルでPURCHASE_IDの整合を確認済み。
+- 同一商品保有時の別note拒否: 正常apply後、同じユーザーが別HANABI取引をapplyすると共通エラーで拒否。T_PURCHASE 0件・対象note未移行のまま・既存T_USER_PRODUCT不変（副作用なし）を確認済み。
+- 移行済みnoteの別ユーザー拒否: 移行済み取引を別ユーザーがapplyすると共通エラーで拒否されることを確認済み。
+- 商品不一致拒否: HANABI_GOOGLE_EARTH取引（PRODUCT_ID=3）をHANABIとしてapplyすると共通エラーで拒否。T_PURCHASE 0件・対象note未移行のままを確認済み。
+- unlink: 正常移行を管理画面から解除し、T_PURCHASE.DEL_FLG=1・note由来T_USER_PRODUCT無効化（STATUS=2・DEL_FLG=1・PURCHASE_ID=NULL）・T_NOTE_PURCHASE未移行化を確認済み。
+- E2E後クリーンアップ: 販売前・公開前のため、E2Eで作成したT_PURCHASE/T_USER_PRODUCTのHANABI行を物理削除し、CSV初期取込直後（T_NOTE_PURCHASEの実購入履歴は残し、対象note取引は未移行）の状態へ復元済み。
+
 ## 状態
-Local E2E 合格。Production E2E は未実施（承認待ち）。
+Local E2E 合格。Production E2E 合格。WORK-008 完了。
