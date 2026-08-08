@@ -30,17 +30,30 @@ Cloudflare D1を利用し、ブラウザから直接操作させない。
 
 Stripe Checkoutを利用し、カード情報を自サイトで保持しない。
 
-### 秘密情報
+### 環境変数と秘密情報
 
-以下はCloudflare Secrets等へ保存する。
+Cloudflare の通常環境変数（Dashboard 管理・非秘密）:
 
 ```text
+APP_ENV
 SUPABASE_URL
 SUPABASE_ANON_KEY
+ADMIN_AUTH_USER_ID
+```
+
+- SUPABASE_URL / SUPABASE_ANON_KEY はフロントへ配布可（/api/config 経由）。
+- ADMIN_AUTH_USER_ID は秘密鍵ではないが、フロント / API レスポンスへ値を露出しない
+  （管理者判定にのみサーバー側で使用する）。
+- これらは Cloudflare Dashboard の通常環境変数として管理し、wrangler.toml へ実値を書かない。
+- wrangler.toml の `keep_vars = true` により、deploy 時に Dashboard 管理の通常環境変数を
+  削除・上書きしない。
+
+Cloudflare Secrets へ保存する秘密情報（`wrangler secret put`、deploy で消えない）:
+
+```text
 SUPABASE_SERVICE_ROLE_KEY
 STRIPE_SECRET_KEY
 STRIPE_WEBHOOK_SECRET
-ADMIN_AUTH_USER_ID
 MAIL_API_KEY
 ```
 
@@ -75,6 +88,18 @@ APIを無条件で利用可能
 管理者メールアドレスのみで判定しない。
 
 管理者APIはすべて`requireAdmin()`を通す。
+
+### 管理者自身のSTATUS変更制限
+
+`ADMIN_AUTH_USER_ID` と対象 AUTH_USER_ID が同一の場合、管理不能を避けるため
+STATUS=2（停止）・STATUS=9（退会）への変更を禁止する（STATUS=1 の有効化は許可）。
+禁止時は HTTP 400 / code=ADMIN_SELF_STATUS_CHANGE_NOT_ALLOWED を返す。
+
+### ADMIN_AUTH_USER_ID の取り扱い
+
+- サーバー側環境変数として保持し、管理者判定にのみ使用する。
+- 値そのものをフロント / API レスポンス / /api/config へ露出しない。
+- 秘密鍵ではないが、通常環境変数として Cloudflare Dashboard で管理する。
 
 ## 6. 入力
 
