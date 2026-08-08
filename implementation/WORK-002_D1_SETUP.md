@@ -1,6 +1,6 @@
 # WORK-002 D1 Initial Setup
 
-Status: Approved
+Status: Completed
 
 ## 目的
 Cloudflare D1を作成し、承認済みDDLを適用する。

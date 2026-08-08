@@ -1,6 +1,6 @@
 # WORK-003 Supabase Authentication
 
-Status: Approved
+Status: Completed
 
 ## 目的
 共通アカウントの新規登録、メール認証、ログイン、ログアウト、パスワード再設定を実装する。

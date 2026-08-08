@@ -1,6 +1,6 @@
 # WORK-005 Account and Entitlement
 
-Status: Approved
+Status: Completed
 
 ## 目的
 M_USER同期、ログイン後ホーム、商品一覧、商品権限確認を完成させる。

@@ -1,6 +1,6 @@
 # WORK-004 Common API Foundation
 
-Status: Approved
+Status: Completed
 
 ## 目的
 全APIで利用する認証、管理者判定、レスポンス、入力検証、D1アクセスを共通化する。

@@ -1,6 +1,6 @@
 # WORK-006 Admin Console
 
-Status: Approved
+Status: Completed
 
 ## 目的
 管理者が通常運用をSQLなしで行えるPC専用管理画面を実装する。

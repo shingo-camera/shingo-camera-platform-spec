@@ -1,6 +1,6 @@
 # WORK-001 Platform Foundation
 
-Status: Approved
+Status: Completed
 
 ## 目的
 共通基盤コードを置く新規プロジェクトを作成し、Cloudflareへ非公開Productionとしてデプロイできる状態にする。
