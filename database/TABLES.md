@@ -54,9 +54,22 @@ WARNING_MAIL_INTERVAL_MIN
 DEVICE_CHANGE_SCORE
 REGION_CHANGE_SCORE
 COUNTRY_CHANGE_SCORE
+ACCESS_LOG_INTERVAL_MIN
 ```
 
 設定値は文字列で保持し、利用側で型変換する。
+
+### ACCESS_LOG_INTERVAL_MIN
+
+権限確認アクセスログ（ACCESS_TYPE=1）の抑制間隔。
+
+- 意味: 同一条件の権限確認アクセスログを再記録するまでの最小間隔（分）
+- 初期値: 60
+- 0: 抑制なし（毎回記録する）
+- 負数: 無効な設定値として内部設定エラーとして扱う
+- 不存在・非整数も内部設定エラーとして扱い、利用者へ内部詳細を返さない
+
+migration 0003 で追加（0001 / 0002 は変更しない）。
 
 ## T_PURCHASE
 

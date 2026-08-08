@@ -207,4 +207,5 @@ VALUES
     ('WARNING_MAIL_INTERVAL_MIN', '60', '同一対象へのWarning通知抑止時間（分）', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
     ('DEVICE_CHANGE_SCORE', '10', '端末変化時の初期スコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
     ('REGION_CHANGE_SCORE', '20', '地域変化時の初期スコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
-    ('COUNTRY_CHANGE_SCORE', '50', '国変化時の初期スコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00');
+    ('COUNTRY_CHANGE_SCORE', '50', '国変化時の初期スコア', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00'),
+    ('ACCESS_LOG_INTERVAL_MIN', '60', '権限確認アクセスログの最小記録間隔（分）', strftime('%Y-%m-%dT%H:%M:%S','now','+9 hours') || '+09:00');

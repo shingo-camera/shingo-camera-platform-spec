@@ -124,12 +124,47 @@ requireProduct(request, env, "SUN_AND_MOON")
 
 ## 5. アクセスログ抑制
 
-同一ユーザー、同一商品、同一DEVICE_ID、同一ACCESS_TYPEで短時間に連続する場合は、毎回保存しない。
+権限確認（`GET /api/entitlements/{code}`）は `ACCESS_TYPE = 1` で T_ACCESS_LOG へ記録する。
+同一条件の短時間連続アクセスは毎回保存しない。
 
-初期目安:
+### 同一条件
+
+次の4項目が一致するものを同一条件とみなす。
 
 ```text
-1時間に最大1件
+AUTH_USER_ID
+PRODUCT_ID
+ACCESS_TYPE   （= 1）
+DEVICE_ID
 ```
 
-この間隔はM_SYSTEM_SETTINGで変更可能とする。
+同一条件の最新 T_ACCESS_LOG の記録時刻から `ACCESS_LOG_INTERVAL_MIN` 分以内であれば、
+新しいログを記録しない。間隔を超えていれば記録する。
+
+### DEVICE_ID の扱い
+
+- DEVICE_ID あり: 同一 UUID 単位で抑制する。
+- DEVICE_ID なし: `DEVICE_ID IS NULL` 同士を同一グループとして扱い抑制する。
+- DEVICE_ID が無い場合でも、抑制のための識別子を新規生成しない。
+
+判定 SQL は Prepared Statement を用い、NULL 同士の一致を
+`DEVICE_ID = ? OR (DEVICE_ID IS NULL AND ? IS NULL)` で表現する。
+
+### 抑制間隔の設定
+
+抑制間隔は M_SYSTEM_SETTING の `ACCESS_LOG_INTERVAL_MIN`（分）から取得する。
+
+- 初期値: 60
+- 0: 抑制なし（毎回記録する）
+- 設定値が「不存在」「非整数」「負数」の場合は内部設定エラーとして扱う。
+  利用者へは設定キーや内部値の詳細を返さない。
+
+### 日時比較
+
+START_DATE / END_DATE を用いた available 判定は、ISO 8601 文字列の辞書順比較ではなく
+日時（Date）へ変換して比較する。
+
+理由: 保存日時はミリ秒付き（例 `...T06:30:00.000+09:00`）とミリ秒なし
+（例 `9999-12-31T23:59:59+09:00`）が混在し得るため、辞書順比較では秒直後の
+`.` と `+` の並びにより同一時刻付近で誤判定する可能性がある。オフセットは全て
+`+09:00` に統一（ADR-012）されており、Date 変換に曖昧さはない。
