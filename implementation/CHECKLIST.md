@@ -11,6 +11,6 @@ Status: Approved
 - [x] WORK-007 Stripe Purchase
 - [x] WORK-008 note Migration
 - [x] WORK-009 Warning Notification
-- [ ] WORK-010 SUN AND MOON Integration
+- [x] WORK-010 SUN AND MOON Integration
 - [ ] WORK-011 Public Site
 - [ ] WORK-012 Publication
