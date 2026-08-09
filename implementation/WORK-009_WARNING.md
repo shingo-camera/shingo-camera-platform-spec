@@ -1,6 +1,6 @@
 # WORK-009 Warning Notification
 
-Status: Approved
+Status: Completed
 
 ## 目的
 不審な利用を定期判定し、対象がある場合だけ管理者へメール通知する。
@@ -69,7 +69,15 @@ T_WARNING.WARNING_SCORE に記録する値:
 
 ## 重複通知防止
 
-新しい通知履歴テーブルは作らない。既存 T_WARNING と NOTIFIED_DATE、既存 WARNING_MAIL_INTERVAL_MIN=60 を使用する。同一ユーザー・同一 WARNING_TYPE について、直近の NOTIFIED_DATE から WARNING_MAIL_INTERVAL_MIN 以内は同種メールを再送しない。
+新しい通知履歴テーブルは作らない。既存 T_WARNING と NOTIFIED_DATE を使用する。
+
+Warning レコードの重複防止とメール再送抑止を分離する。
+
+- T_WARNING の継続判定: 同一 AUTH_USER_ID + WARNING_TYPE について、PERIOD_END が GAP（= 各種別の判定窓。LOGIN_FAILURE=60分 / MANY_DEVICES・MANY_REGIONS・COUNTRY_CHANGE=24時間）以内の既存行があれば、STATUS(0/1/2/9) を問わず同一の継続事象としてその1行を再利用（UPDATE）する。管理者が STATUS を変更していても、条件が継続している同じ Warning の新規行は作らない。PERIOD_END が GAP を超えていれば「解消済み」とみなし、再発は新規行とする。継続中は DETECT_DATE / PERIOD_START を初回値で固定し、PERIOD_END のみ更新する。STATUS / MEMO / LAST_ACTION_DATE は Cron から変更しない。
+
+- メール送信（初版: 1事象 = T_WARNING 1行 = メール1通）: 新規 T_WARNING 作成時に NOTIFIED_DATE が NULL の場合のみ管理者へ送信し、送信成功時のみ NOTIFIED_DATE を記録する。同じ WARNING_ID を継続再利用している間は、NOTIFIED_DATE が入っていれば（STATUS=0 のままでも、STATUS=1/2/9 でも）再送しない。メール送信失敗時は NOTIFIED_DATE を NULL のまま残し、新規行も作らず、次回 Cron で同じ WARNING_ID の再送を試行する。GAP 超過後に再発して新しい WARNING_ID が作られた場合は、その新事象について改めて1通送る。
+
+既存 WARNING_MAIL_INTERVAL_MIN=60 は削除・変更せず維持するが、WORK-009 初版では同一 WARNING_ID の再送条件には使用しない（将来のリマインド通知等のために残す）。
 
 ## Cron
 
@@ -85,3 +93,19 @@ Warning検知・スコア超過・メール通知のいずれを理由として�
 
 ## 完了条件
 初版4種の検知、同一事象の重複メールなし、自動停止なし、閾値変更で再デプロイ不要、Warning 0件時にメール非送信、本文に秘密情報を含めないこと。
+
+## Production E2E結果（Completed）
+
+2026-08-09 に Production 環境で E2E を実施し、以下を確認した。
+
+- Cron（`0 * * * *`）による LOGIN_FAILURE Warning の検知成功。
+- T_WARNING への登録成功（WARNING_ID=1 / WARNING_TYPE=LOGIN_FAILURE / STATUS=0）。
+- Resend による管理者宛メールの実送信成功、管理者による実受信を確認。
+- 送信成功後の NOTIFIED_DATE 記録を確認（2026-08-09T08:00:53.178+09:00）。
+- 次回 Cron（9時台）通過後も同一継続事象は T_WARNING 1行のまま（重複 Warning なし）。
+- NOTIFIED_DATE は初回値のまま変化せず、Resend 送信・受信メールとも再送なし（重複通知抑止をProductionで確認）。
+- 「1事象 = T_WARNING 1行 = メール1通」および継続事象の1行再利用が Production 実データで成立することを確認。
+
+E2E 用に投入したテストデータ（識別子 `WORK009_PROD_E2E` のログイン失敗ログ、およびそれにより生成された WARNING_ID=1 / LOGIN_FAILURE）は、E2E 完了後に特定・削除済み（実運用データは削除していない）。
+
+デプロイ情報: Version ID `1defe567-c824-4f20-81ad-7a0889b443cd`、migration 0004 適用済み、Resend `shingo-camera.com` Verified、Production `MAIL_API_KEY` 登録済み。実装は実装リポジトリの `820dae4 Implement WORK-009 warning notification` にて commit / push 済み。

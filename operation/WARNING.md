@@ -102,7 +102,13 @@ Cloudflareの定期処理（Cron Trigger）でWarning候補を確認する。
 
 ### 重複通知防止
 
-新しい通知履歴テーブルは作らない。既存 T_WARNING と NOTIFIED_DATE、既存 WARNING_MAIL_INTERVAL_MIN=60 を使う。同一ユーザー・同一 WARNING_TYPE について、直近の NOTIFIED_DATE から WARNING_MAIL_INTERVAL_MIN 以内は同種メールを再送しない。送信できた場合は当該 T_WARNING の NOTIFIED_DATE を更新する。
+新しい通知履歴テーブルは作らない。既存 T_WARNING と NOTIFIED_DATE を使う。Warning レコードの重複防止とメール再送抑止を分離する。
+
+- T_WARNING の継続判定: 同一 AUTH_USER_ID + WARNING_TYPE について、PERIOD_END が GAP（= 各種別の判定窓。LOGIN_FAILURE=60分 / 他=24時間）以内の既存行があれば、STATUS を問わず同一の継続事象としてその1行を再利用（UPDATE）する。GAP 超過後の再発は新規行。継続中は DETECT_DATE / PERIOD_START を初回値で固定し、PERIOD_END のみ更新する。STATUS / MEMO / LAST_ACTION_DATE は Cron から変更しない。
+
+- メール送信（初版: 1事象 = T_WARNING 1行 = メール1通）: 新規 T_WARNING 作成時に NOTIFIED_DATE が NULL の場合のみ送信し、成功時のみ NOTIFIED_DATE を更新する。同じ WARNING_ID の継続再利用中は、NOTIFIED_DATE が入っていれば再送しない（STATUS=0 のままでも、STATUS=1/2/9 でも）。送信失敗時は NOTIFIED_DATE を NULL のまま残し、新規行も作らず、次回 Cron で同じ WARNING_ID の再送を試行する。GAP 超過後の再発（新 WARNING_ID）は改めて1通送る。
+
+WARNING_MAIL_INTERVAL_MIN=60 は削除・変更せず維持するが、初版では同一 WARNING_ID の再送条件には使用しない（将来のリマインド通知用）。
 
 ## 7. 通知メール
 
