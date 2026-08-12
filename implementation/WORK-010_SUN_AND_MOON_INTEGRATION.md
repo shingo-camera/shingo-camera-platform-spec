@@ -6,7 +6,7 @@ Status: Completed
 既存SUN AND MOONへ共通認証・商品権限確認を追加する。
 
 ## 前提
-最新`portrait.html`を唯一の実装基準とし、Moonは統合済みとして扱う。
+SUN AND MOON本体の唯一の実装正本は `public/apps/sun-and-moon/index.html` とする。旧 `portrait.html` / `moon.html` は実装正本として扱わない（Moonは本体へ統合済み）。
 
 ## 実装
 - 未ログイン時ログインへ
@@ -17,6 +17,18 @@ Status: Completed
 
 ## 禁止
 天体計算、APIレスポンス、既存UIの無関係な変更。
+
+## 発売前 実機修正（スマホ 太陽/月トグル）
+
+SUN AND MOON本体 `public/apps/sun-and-moon/index.html` のスマホ地図上「太陽/月切替」トグルは、発売前のProductionスマホ実機確認を経て以下の現行仕様とする（実機で押下確認済み）。
+
+- 配置: スマホ右上の衛星ボタン（`#map-sat-btn`）直下の右端縦列。衛星の直下（`top:52px` = 衛星 `top:8px` + 高さ36px + 8pxギャップ）へ同幅・同スタイルで積む。既存の衛星／メニュー／対象追加／ズーム／検索のいずれとも重ならない。
+- safe-area 考慮（`env(safe-area-inset-top/right)`）。
+- 表示: PCは非表示（`#map-body-toggle{ display:none; }`）、スマホのみ `@media (max-width:600px)` で `display:flex`。
+- ロジック: 既存 `setSunsetMode(!sunsetMode)` を再利用（新規ロジックを作らない）。状態は `setSunsetMode` 内で一元管理し、ボタン表示（☀ 太陽／☾ 月）もそこで同期する。
+- 既存の衛星ボタン（`#map-sat-btn`）・メニューボタン（`#map-menu-btn`）・検索・ズームの位置と機能は変更しない。
+
+補足: 初期実装では独立した固定座標（左上）に置いていたが、実機で既存コントロールと重なったため、既存スマホボタン群と同じレイアウト方式（右端縦列）へ組み込む現行仕様に修正した。旧CSS配置（左上固定・`display:block` 切替）は現行実装では使用しない。
 
 ## 完了条件
 未ログイン・未購入・停止を拒否し、購入者が既存機能を問題なく利用できる。

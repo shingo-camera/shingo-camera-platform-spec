@@ -30,3 +30,48 @@ WORK-011 Public Site 実装の過程で、販売開始に必要な以下を追�
 - 最終 Production スモーク合格。
 
 以上により WORK-011 Public Site を Done（Production 運用中）とする。
+
+## 発売前SEO / Public Site metadata（Production反映済み）
+
+発売前に、公開ページのインデックス制御と基礎metadataを実装済み（Production反映済み）。実装正本は `public/` 配下（`robots.txt` / `sitemap.xml` / 各 `index.html` の `<head>`）。
+
+### index制御方針（robots / noindex）
+
+- HTML内部ページは各ページの `<meta name="robots" content="noindex">` で検索除外する。
+- `robots.txt` ではHTMLを Disallow しない。理由: Disallow するとクローラがHTMLを取得できず `noindex` を読めないため。クローラにHTMLを取得させて `noindex` を読ませる。
+- `robots.txt` では `/api/` のみ Disallow する。
+- `sitemap.xml` にはindex対象の公開ページだけを載せる。
+
+### robots.txt
+
+```text
+User-agent: *
+Disallow: /api/
+Sitemap: https://shingo-camera.com/sitemap.xml
+```
+
+### sitemap.xml（index対象の公開ページ）
+
+- `https://shingo-camera.com/`
+- `https://shingo-camera.com/store/`
+- `https://shingo-camera.com/products/`
+- `https://shingo-camera.com/products/sun-and-moon/`
+
+### 公開4ページ（index対象）
+
+`/`（HOME）、`/store/`（STORE）、`/products/`、`/products/sun-and-moon/` は noindex解除。各ページに以下を設定する。
+
+- canonical（自ページの絶対URL）
+- meta description
+- OGP基礎metadata: `og:type` / `og:title` / `og:description` / `og:url` / `og:site_name`
+
+### 内部ページ（noindex対象）
+
+`/login/` `/signup/` `/forgot-password/` `/reset-password/` `/purchase/success/` `/purchase/cancel/` 等の内部ページは `<meta name="robots" content="noindex">` を設定する。
+
+### 未実装（発売後対応可・BLOCKERではない）
+
+- `og:image`（OGP画像）
+- Twitter Card（`twitter:card` 等）
+
+商品ページの実写・アプリ画面素材が確定した段階で `og:image` を追加する想定。基礎metadata（上記5種）は実装済みのため、SNS共有時にタイトル・説明・URLは表示される。

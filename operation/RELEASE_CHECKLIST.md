@@ -113,10 +113,15 @@ Status: Approved
 - [ ] サポート
 - [ ] SNSリンク
 - [ ] favicon
-- [ ] OGP
+- [ ] OGP（基礎metadata: og:type / og:title / og:description / og:url / og:site_name）
 - [ ] 404
-- [ ] robots.txt
-- [ ] sitemap.xml
+- [ ] robots.txt（User-agent: * / Disallow: /api/ のみ / Sitemap 行）
+- [ ] sitemap.xml（index対象の公開ページのみ: / , /store/ , /products/ , /products/sun-and-moon/ ）
+- [ ] 公開4ページ canonical（/ , /store/ , /products/ , /products/sun-and-moon/ ）
+- [ ] 公開4ページ meta description
+- [ ] 内部ページ meta noindex（login / signup / forgot-password / reset-password / purchase/success / purchase/cancel 等）
+
+補足（SEO index制御方針・WORK-011_PUBLIC_SITE 参照）: HTMLは meta noindex で検索除外し、robots.txt ではHTMLを Disallow しない（クローラに noindex を読ませるため）。robots.txt の Disallow は /api/ のみ。og:image / Twitter Card は発売後対応（本チェックリストの必須項目に含めない）。
 
 ## 10. 法務・表示
 
