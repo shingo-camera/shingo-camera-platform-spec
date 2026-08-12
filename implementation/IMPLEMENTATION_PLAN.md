@@ -50,7 +50,7 @@ WORK-009 Warning通知
 ↓
 WORK-010 SUN AND MOON統合
 ↓
-WORK-011 公開サイト・法務導線
+WORK-011 公開サイト・法務導線（動線再編・複数商品Checkout等の追加対応を含む。詳細は WORK-011_APPENDIX_MULTI_CHECKOUT.md）
 ↓
 WORK-012 本番公開確認
 ```

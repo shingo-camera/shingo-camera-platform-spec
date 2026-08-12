@@ -12,5 +12,5 @@ Status: Approved
 - [x] WORK-008 note Migration
 - [x] WORK-009 Warning Notification
 - [x] WORK-010 SUN AND MOON Integration
-- [ ] WORK-011 Public Site
+- [x] WORK-011 Public Site
 - [ ] WORK-012 Publication
