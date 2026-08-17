@@ -94,3 +94,18 @@ Windy 連携で、PLの塔・富田林 撮影地点から開くと中心が奈�
 ## PC / スマホ
 
 今回の Production 主要機能 E2E は PC で実施。スマートフォン固有UI・PWA の網羅確認は WORK-010 Completed 条件には含めない。必要なら別確認項目として残す。
+
+
+## 2026-08-18 発売前 current baseline 追補
+
+以下はPlatform統合後のSUN AND MOON本体に入った発売前修正としてcurrent baselineへ固定する。旧ZIP・旧Pages版から上書きして戻さない。
+
+- 対象標高補正は対象データの `elevOffset` へ一本化。旧撮影セッション `targetOffset` は廃止。
+- 撮影計画保存は **撮影地点＋対象の両方が選択済み** の場合のみ実行。未選択時は警告を出さずno-op。
+- 保存時に撮影計画名 `planName` を入力。既定値は「対象名称_」。通常一覧・共有/エクスポート系で使う共通ラベルの末尾へ表示し、`planName`を持たない旧データは従来表示のまま。
+- スマホ太陽/月トグルは本書上部の現行仕様（衛星ボタン直下）を維持。
+- DEV起動では `/dev/apps/sun-and-moon/` から自前APIを `/dev/api/apps/sun-and-moon/*` へ解決する。2026-08-18に `app-start` 200 OKを実機確認済み。
+
+### 既知の自動テスト課題
+
+2026-08-18 current baselineでSUN AND MOON chance/pinpoint系の既知failが2件残る。DEV環境追加による回帰として扱わず、検索アルゴリズム側の別課題として切り分ける。ただし発売判断時には再評価する。

@@ -140,3 +140,19 @@ Status: Approved
 - [ ] D1復旧手順確認
 - [ ] CSV保存先確認
 - [ ] 秘密情報がGitにないこと
+
+## 12. DEV → Production 昇格（2026-08-18追加）
+
+- [ ] current baselineから変更している（古いZIPで上書きしていない）
+- [ ] `npm test`で既知fail以外の新規fail 0
+- [ ] `tsc --noEmit` 成功
+- [ ] DEV D1 / Stripe Test / Accessのbindingを確認
+- [ ] DEVログイン成功
+- [ ] DEV Stripe Test Checkout成功
+- [ ] Stripe returnが `/dev/purchase/success/` を維持
+- [ ] DEV D1へ購入・権限反映
+- [ ] Store/My Page「利用する」が `/dev/apps/...` を開く
+- [ ] SUN AND MOON自前APIが `/dev/api/apps/sun-and-moon/*` を使用
+- [ ] Production URL resolver characterization testが不変
+- [ ] DB migrationがある場合、Production適用順を確定
+- [ ] DEV確認済み差分だけをmainへ昇格

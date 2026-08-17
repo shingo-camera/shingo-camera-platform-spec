@@ -24,6 +24,7 @@ implementation/
 ├─ WORK-011_PUBLIC_SITE.md
 ├─ WORK-011_APPENDIX_MULTI_CHECKOUT.md
 ├─ WORK-012_PUBLICATION.md
+├─ TEST_STATUS.md
 └─ CHECKLIST.md
 ```
 
@@ -32,7 +33,7 @@ implementation/
 ## フォルダ構成
 
 ```text
-architecture/   基盤・認証・セキュリティ設計
+architecture/   基盤・認証・セキュリティ・DEV環境設計
 api/            API仕様
 adr/            Architecture Decision Record
 database/       DB設計・DDL・ERD・テーブル定義
@@ -65,7 +66,8 @@ screen/         公開画面・管理画面設計
 
 ```text
 Local
-Production（公開前は未告知で運用）
+DEV（https://shingo-camera.com/dev）
+Production（https://shingo-camera.com）
 ```
 
-専用Stagingは初期構築では作成しません。
+正式DEV環境を使用し、DEVで実機確認済みの変更のみProductionへ昇格します。詳細は `adr/ADR-013_FORMAL_DEV_ENVIRONMENT.md`。

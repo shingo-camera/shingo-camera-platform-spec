@@ -371,3 +371,12 @@ STRIPE_PRICE_HANABI_GOOGLE_EARTH
 ```
 
 公開可能なPublishable Key以外はフロントへ渡さない。
+
+## 10. 環境別 Checkout return URL（2026-08-18追補）
+
+Checkout Sessionの`success_url` / `cancel_url`は `env.APP_BASE_URL` を唯一の正とする。URLを正規化する際に `.origin` のみを返してpathnameを捨ててはならない。
+
+- Production `APP_BASE_URL=https://shingo-camera.com` → Production `/purchase/...`
+- DEV `APP_BASE_URL=https://shingo-camera.com/dev` → DEV `/dev/purchase/...`
+
+`request.url.origin`は同一operationのStripe createパラメータを揺らす可能性があるため正本にしない。2026-08-18、DEV Stripe Test Checkoutのreturnが`/dev/purchase/success/`へ戻ることを実機確認済み。

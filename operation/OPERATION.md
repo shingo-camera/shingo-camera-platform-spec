@@ -118,3 +118,12 @@ Stripe購入はWebhookで自動反映する。
 - 最終サポート日
 - 個人情報削除
 - ドメイン・Cloudflare停止時期
+
+
+## 11. 正式DEV運用
+
+Productionで試して直さない。変更はLocal→DEV→Productionの順で昇格する。DEVは専用D1・Stripe Test・Cloudflare Accessを使用し、`https://shingo-camera.com/dev/*`内で認証・購入・アプリ起動まで確認する。
+
+テスト購入をやり直す場合、管理者用DEV reset APIを利用できるが、Productionではdenyされることを維持する。Stripe Checkout後はreturn URL、購入権反映、「利用する」起動先、自前API Request URLに`/dev`が維持されることを確認する。
+
+古い修正ZIPをcurrent sourceへ丸ごと上書きしない。成果物適用前にdiffを確認し、後から入った修正の巻き戻しがないことを確認する。

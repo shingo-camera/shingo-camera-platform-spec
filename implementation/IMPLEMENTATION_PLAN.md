@@ -12,10 +12,11 @@ shingo-camera Platformの共通認証・商品権限・購入・管理基盤を�
 
 ```text
 Local
-Production（非公開）
+DEV（正式検証環境 / https://shingo-camera.com/dev）
+Production
 ```
 
-専用のStaging環境は作らない。Productionは公開前の開発・結合テスト環境として使用し、完成後にそのまま公開する。
+正式DEV環境を設ける。Productionを開発・結合テスト環境として使用せず、DEVで実機確認済みの変更のみProductionへ昇格する。詳細は `adr/ADR-013_FORMAL_DEV_ENVIRONMENT.md` と `architecture/DEV_ENVIRONMENT.md` を正本とする。
 
 ## 3. 原則
 
