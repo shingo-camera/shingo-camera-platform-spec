@@ -21,7 +21,11 @@ DEV追加・URL resolver修正・Stripe return修正・アプリ起動修正に�
 ## 3 failの分類
 
 1. Earth icon検査 1件: Windows環境で`python3`コマンドが見つからないテスト環境要因。画像不良を示すものではない。
-2. SUN AND MOON chance/pinpoint系 2件: DEV追加前から追跡している既知検索テスト。DEV修正とは切り分ける。
+2. SUN AND MOON chance/pinpoint系 2件: DEV追加前から追跡している既知検索テスト。DEV修正とは切り分ける。内訳は性質が異なるため分けて扱う：
+   - `日別最小moveM 代表` 系: canonical 探索側（moveM最小の代表選定）の既知課題。表示時刻の丸めとは無関係。
+   - `pinpoint 上端中央近傍 altPct≈100` 系: 現 Production で `time` / `moveM` / `ts` が canonical `fd.dt` 由来、`alt` / `azDiff` / `angDiam` が `dispDt` 由来という**時刻由来値の混在**（WORK-010「現Productionに存在する時刻不整合」）との**関連が未解決**。以前の表示時刻変更検証で自然に pass 化した実績があるため、「表示時刻とは無関係」とは断定しない。**次回 display-time 整合修正（表示依存値を同一 `displayDt` 由来へ統一）時に再評価する既知課題**とする。
+
+   chance/pinpoint の評価正本（moveM / PINPOINT≤30m / CHANCE≤200m / canonical時刻）は `implementation/WORK-010_SUN_AND_MOON_INTEGRATION.md`「CHANCE / PINPOINT 検索仕様」を正本とする。
 
 ## Windows回帰防止
 

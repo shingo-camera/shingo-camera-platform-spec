@@ -20,7 +20,9 @@ Status: Active (2026-08-18)
 - SUN AND MOONの対象offsetは対象データ`elevOffset`へ一本化。旧`targetOffset`を復活させない。
 - SUN AND MOONの撮影計画保存は撮影地点＋対象の両方必須。未選択時はno-op。
 - 撮影計画名`planName`は保存時に入力し、既存一覧ラベルの末尾へ表示。旧データ互換を維持。
-- スマホ太陽/月トグルは衛星ボタン直下の右端縦列・safe-area対応。
+- スマホ地図ボタンは右上の右端縦列で、**上＝太陽/月トグル（`#map-body-toggle`, `top:8px`）、下＝衛星切替（`#map-sat-btn`, `top:52px`）**、safe-area対応。地図メニュー（☰）は右下。旧記述の「衛星を上・太陽/月を下」とする順序は上下が逆であり使用しない。
+- SUN AND MOON chance/pinpoint の canonical event time は moveM最小時刻 `fd.dt`。検索側（moveM / 採否 PINPOINT≤30m・CHANCE≤200m / ★の基礎となる検索結果 / candidate / sort / dedup / canonical event time）は変更しない。次回修正は `fd.dt` から最近傍1分の `displayDt` を生成（秒<30→当該分／≥30→次分／日跨ぎは丸め済みDateから生成）し、`date`/`time`/`azDiff`/`alt`/`angDiam` など表示時刻依存値を同一 `displayDt` から生成する（現状の時刻由来値の混在を解消）。`azMatchTime`/angSep最小等の別時刻探索は行わない。**Rev1/Rev2の角距離(angSep)最小表示時刻探索はいずれも不採用**（Rev1＝成立区間外へ流出し得たため／Rev2＝canonical `fd.dt` と別の angSep最小時刻を表示時刻にする仕様変更自体を採らないため）。詳細は `implementation/WORK-010_SUN_AND_MOON_INTEGRATION.md`「CHANCE / PINPOINT 検索仕様」。
+- 検索導線：一括CHANCE検索は廃止、一括PINPOINTは維持、通常画面のCHANCE検索は維持。
 
 ## 成果物の作り方
 
