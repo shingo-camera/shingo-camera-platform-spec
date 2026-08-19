@@ -24,6 +24,7 @@ implementation/
 ├─ WORK-011_PUBLIC_SITE.md
 ├─ WORK-011_APPENDIX_MULTI_CHECKOUT.md
 ├─ WORK-012_PUBLICATION.md
+├─ WORK-013_HANABI_INTEGRATION.md
 ├─ TEST_STATUS.md
 └─ CHECKLIST.md
 ```
@@ -61,6 +62,12 @@ screen/         公開画面・管理画面設計
 - WORK-002 D1 Initial Setup: 完了
 - WORK-003 Supabase Authentication: 完了
 - WORK-004 Common API Foundation: 次工程
+- WORK-010 SUN AND MOON Integration: 完了
+- WORK-011 Public Site: 完了
+- WORK-013 HANABI Integration: 実装済み / DEV実機確認済み / Production未公開
+- WORK-012 Publication: 未了（HANABIはProduction公開工程へ進める見込み。公開はWORK-012で確定）
+
+WORK単位の詳細な状態は `implementation/CHECKLIST.md` を正本とする。
 
 ## 環境
 

@@ -13,4 +13,5 @@ Status: Approved
 - [x] WORK-009 Warning Notification
 - [x] WORK-010 SUN AND MOON Integration
 - [x] WORK-011 Public Site
+- [x] WORK-013 HANABI Integration（実装済み / DEV実機確認済み / Production未公開。Production公開はWORK-012）
 - [ ] WORK-012 Publication

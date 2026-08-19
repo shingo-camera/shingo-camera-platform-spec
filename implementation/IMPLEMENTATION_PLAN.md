@@ -53,8 +53,12 @@ WORK-010 SUN AND MOON統合
 ↓
 WORK-011 公開サイト・法務導線（動線再編・複数商品Checkout等の追加対応を含む。詳細は WORK-011_APPENDIX_MULTI_CHECKOUT.md）
 ↓
+WORK-013 HANABI統合（SUN AND MOONのWORK-010と並列のアプリ統合。Platform統合・公開前UI/state調整・HANABI回帰テスト。詳細は WORK-013_HANABI_INTEGRATION.md）
+↓
 WORK-012 本番公開確認
 ```
+
+WORK-013はWORK-010（SUN AND MOON統合）と並列のアプリ単位統合WORKであり、実装正本 develop で実施済みの内容を正本化したもの。番号はファイル追加順で付与しており、Production公開確認（WORK-012）はHANABI統合を含めた最終工程として位置づける。
 
 ## 5. 実装報告
 

@@ -46,3 +46,25 @@ DEV追加・URL resolver修正・Stripe return修正・アプリ起動修正に�
 ## 2026-08-18 実機確認
 
 DEVで Stripe Test Checkout → `/dev/purchase/success/` → DEV D1権限反映 → 「利用する」→ `/dev/apps/sun-and-moon/` → `/dev/api/apps/sun-and-moon/app-start` 200 OKまで確認済み。
+
+## HANABI統合後のテスト結果（最新）
+
+WORK-013（HANABI Integration）の実装・公開前調整・HANABI回帰テスト追加を反映したfixture込みの最新テスト一式で実行済み。上記の旧結果（403 tests / 400 pass / 3 fail、Windows環境での直近実行）は履歴として残し、最新結果を以下に追記する。
+
+```text
+680 tests
+668 pass
+12 fail
+0 cancelled
+0 skipped
+0 todo
+```
+
+今回追加したHANABI回帰テストについて新規failは確認されていない。残存12 failは今回のHANABI追加差分とは独立していることを確認した。
+
+12 failを「全テスト合格」とは表現しない。残存12 failは今回のWORK-013で修正対象とせず、勝手に修正しない。確認できている残存failの主な内訳は次のとおり（性質ごとに分けて扱う）。
+
+- Platform frontend_fixes系: `site.js` cancelCheckout、startMultiCheckout、initStore、active-checkout completed、pending整合、古いopen checkoutの扱い。
+- SUN AND MOON側: chanceの日別最小moveM、非Admin固有建物UI、非Admin時の復元経路遮断、KMZ debug値、円錐台topWidth、その他同系統の既存テスト。
+
+これらは今回のHANABI追加差分とは独立した既存failであり、HANABI統合が新規に発生させたものではないことを確認済み。SUN AND MOON側 chance/pinpoint 系の評価正本・既知課題の扱いは `implementation/WORK-010_SUN_AND_MOON_INTEGRATION.md` を引き続き正本とする。
